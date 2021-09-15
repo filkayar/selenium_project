@@ -1,4 +1,5 @@
 from selenium import webdriver
+from model import *
 
 class ParserOne:
 
@@ -22,7 +23,39 @@ class ParserOne:
                 break
         
     def parce_question(self):
-        pass
+        quest = Question()
+        self.fill_question_text(quest)
+        self.fill_question_code(quest)
+        self.fill_question_answer(quest)
+        print(quest)
+
+    def fill_question_text(self, quest):
+        try:
+            quest.text = self.driver.find_element_by_class_name('lightblack-text').text
+        except:
+            print('Question text missing.')
+        
+    def fill_question_code(self, quest):
+        try:
+            quest.code = self.driver.find_element_by_class_name('code').text
+        except:
+            pass
+
+    def fill_question_answer(self, quest):
+        answer = self.driver.find_element_by_class_name('answer_item')
+        answer.click()
+        try:
+            answer = self.driver.find_element_by_class_name('q-answer')
+            answer.click()
+
+            all_answer = self.driver.find_elements_by_class_name('answer_item')
+            for el in all_answer:
+                answer = [el.text, False]
+                if not ('incorrect' in el.get_attribute('class')):
+                    answer[1] = True
+                quest.answer.append(answer)
+        except:
+            print('No q-answer button')
 
 
 def main():
